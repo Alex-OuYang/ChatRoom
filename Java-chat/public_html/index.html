@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/animate.css" rel="stylesheet">
+        <link href="img/background.jpg">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/scripts.js"></script>
+
+        <script type="text/javascript">
+            var checkin = false;
+            function check() {
+                var account = document.getElementById("account").value;
+                var password = document.getElementById("password").value;
+                if (account == "test" && password == "1234") {
+                    sessionStorage.setItem('password', password);
+                    location.href = "./service.html";
+                } else {
+                    alert("帳號密碼錯誤");
+                }
+            }
+            /*
+             function checkname() {
+             var name = document.getElementById("name").value;
+             if (name == "") {
+             alert("請輸入名子");
+             } else {
+             sessionStorage.setItem('label', name);
+             location.href = "./custom.html";
+             
+             }
+             
+             }*/
+        </script>
+    </head>
+
+    <body class="backageground">
+    <center class="animated fadeInDown">
+        <div style="height:250px"><h1 class="h1_index">客服系統</h1></div>
+    </center>
+
+    <div class="container">
+        <div class="row clearfix" >
+            <div class="  column" style="align:center;valign:middle">
+                <div>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <a href="./custom.html" > <button type="button" class="btn btn-block btn-lg btn-primary animated fadeInLeft" style="height:90px;font-size:35px">訪客登入</button></a> 
+                        <!--      <a  href="#modal-container-627797"  id="modal-627797"  class="btn btn-block btn-lg btn-primary animated fadeInLeft"  data-toggle="modal" ><h1 style="align:center">訪客登入</h1></a> -->
+                    </div>
+                    <div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6"></div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <a href="#modal-container-627799"  id="modal-627799"  class="btn btn-block btn-lg btn-primary  animated fadeInRight"  data-toggle="modal"><h1 style="align:center">客服人員登入</h1></a>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    
+    
+    <!--</div>-->
+    <div class="modal fade" id="modal-container-627799" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                    <h4 class="modal-title" id="myModalLabel" >客服人員登入</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">帳號</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="account">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword3" class="col-sm-2 control-label">密碼</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="password">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="check" onclick="check()" type="submit" class="btn btn-default" >登入</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+    <div class="modal fade" id="modal-container-627797" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                    <h4 class="modal-title" id="myModalLabel" >訪客</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-2 control-label">名子</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="name">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="checkname" onclick="checkname()" type="submit" class="btn btn-default" >確定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> 
+                </div>
+            </div>
+        </div>
+    </div>  -->
+</body>
+</html>

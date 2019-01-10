@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/animate.css" rel="stylesheet">
+        <script type="text/javascript">
+            var checkin = window.sessionStorage.getItem("password");
+            if (checkin !== "1234") {
+                location.href = "./index.html";
+            }
+            var w;
+            var countConnectUser = 0;
+            var havecNumber = false;
+            var catchInNumber = "";//上線的使用者
+            var catchNumber = "";//離開的使用者
+            var nowServerRoom = "";
+            //欲刪除的button
+            String.prototype.startsWith = function (prefix)
+            {
+                return (this.substr(0, prefix.length) === prefix);
+            }
+
+            String.prototype.endsWith = function (suffix)
+            {
+                return (this.substr(this.length - suffix.length) === suffix);
+            }
+            /*
+             function httpGet(method, theUrl)
+             {
+             var xmlHttp = null;
+             xmlHttp = new XMLHttpRequest();
+             if ("withCredentials" in xmlHttp) {
+             xmlHttp.open(method, theUrl, true);
+             } else if (typeof XDomainRequest != "undefined") {
+             xmlHttp = new XDomainRequest();
+             xmlHttp.open(method, theUrl);
+             } else {
+             xmlHttp = null;
+             }
+             console.log("qqqqqqqqqqxmlHttpqqqqqqqqqqqqq");
+             console.log(xmlHttp);
+             return xmlHttp;
+             
+             //xmlHttp.open("GET", theUrl, false);
+             //console.log("=========xmlHttp=====");
+             //console.log(xmlHttp);
+             //xmlHttp.send(number.toString());
+             //return xmlHttp.responseText;
+             }
+             
+             var number = httpGet("get","./custom.html");
+             */
+            var localvalueRow = new Array();
+            function connectToServer() {
+                url = "ws://localhost:8887";//pc實體位置
+                //var localvalue = window.localStorage.key(localStorage.length);
+                w = new WebSocket(url);
+                countConnectUser++;
+                for (var i = 0; i < localStorage.length; i++) {
+                    console.log("localStorage.length=" + localStorage.length);
+                    localvalueRow[i] = window.localStorage.key(i);
+                    console.log("window.localStorage.key(i)=" + window.localStorage.key(i));
+                }
+                w.onopen = function () {
+                    changeroom("0");
+                    //w.send("server:0")
+                }
+
+                window.onload = function () {
+                    for (var i = 0; i < localStorage.length; i++) {
+                        console.log("localStorage.length" + localStorage.length);
+                        var cNumber = window.localStorage.getItem(localvalueRow[i]);//+number.toString()item的數字
+                        havecNumber = true;
+                        console.log(localvalueRow[i]);
+                        console.log("==cNumber==");
+                        console.log(cNumber);
+                        if (cNumber !== null) {
+                            console.log("left" + cNumber);
+                            //window.onload = function () {
+                            var Cbutton = document.createElement("button");
+                            Cbutton.setAttribute("id", cNumber)
+                            Cbutton.setAttribute("class", "gbutton")
+                            Cbutton.innerHTML = "訪客" + cNumber;//
+                            Cbutton.setAttribute("onclick", "changeroom('" + cNumber + "');");
+                            document.getElementById("guestbutton").appendChild(Cbutton);//訪客button移到右邊
+                            console.log("xxxxxxxxxxxxcNumberxxxxxxxxxxxxxxxx");
+                            console.log(cNumber);
+                        }
+                    }
+                }
+                w.onmessage = function (e) {
+
+                    var message = e.data;
+                    var tail = message.substring(message.indexOf(":") + 1);
+
+                    if (tail.indexOf("IMAGE:") == 0) {
+                        document.getElementById("imageBox").src = tail.substring(tail.indexOf("IMAGE:") + 6);
+                        return;
+                    }
+                    if (tail.indexOf("ALERT:") == 0) {
+                        alert(tail.substring(tail.indexOf("ALERT:") + 6));
+                        return;
+                    }
+                    console.log("strstrstrstrstr=" + message.startsWith("訪客 "));
+                    console.log("endendendendend=" + message.endsWith(" 已離開"));
+
+                    if (message.startsWith("訪客 ") && message.endsWith(" 已連線")) {
+                        //字串分割
+                        catchInNumber = message.split(" ");
+                        console.log("InInIn" + catchInNumber[1] + "訪客已連線");//catchInNumber[1] 為幾號訪客
+                        var cNumber = catchInNumber[1];
+                        var Cbutton = document.createElement("button");
+                        Cbutton.setAttribute("id", cNumber)
+                        Cbutton.setAttribute("class", "gbutton")
+                        Cbutton.innerHTML = "訪客" + cNumber;//
+                        Cbutton.setAttribute("onclick", "changeroom('" + cNumber + "');");
+                        document.getElementById("guestbutton").appendChild(Cbutton);
+                        localStorage.setItem('cNumber' + cNumber, cNumber);
+                    }
+
+                    if (message.startsWith("訪客 ") && message.endsWith(" 已離開")) {
+                        //字串分割
+                        catchNumber = message.split(" ");
+                        console.log("catchNumbercatchNumbercatchNumbercatchNumbercatchNumber" + catchNumber[1]);
+                        localStorage.removeItem("cNumber" + catchNumber[1]);//差不知道number
+                        console.log("訪客已離開訪客已離開訪客已離開訪客已離開");
+                        var delButton = document.getElementById(catchNumber[1]);
+                        console.log("catchNumber[1]catchNumber[1]catchNumber[1]catchNumber[1]catchNumber[1]" + catchNumber[1]);
+                        var guestbutton = document.getElementById("guestbutton");//放button的div
+                        guestbutton.removeChild(delButton);
+                        if (catchNumber == nowServerRoom) {
+                        }
+                    }
+                    document.getElementById("chatbox").innerHTML += e.data + "\n";
+                    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+                }
+                w.onclose = function (e) {
+                    logcNumber(cNumber);
+                    localStorage.removeItem("cNumber" + cNumber);//remove  key
+                    console.log("closecloseclosecloseclose");
+                    log("closed");
+                    w.send("客服人員已離開");
+                }
+            }
+            function sendMessage() {
+                var name = document.getElementById("name").value;
+                var message = document.getElementById("message").value;
+                var checkmessage = document.getElementById("message").value;
+                if (checkmessage == "") {
+                    //w.send(message + "111111111111");
+                } else {
+                    if (havecNumber == true) {
+                        w.send("客服人員:" + message);
+                        document.getElementById("message").value = "";
+                    } else {
+                        logcNumber(cNumber);
+                        w.send("客服人員to" + cNumber + ":" + message);
+                        document.getElementById("message").value = "";
+                    }
+                }
+
+            }
+            function runScript(e) {
+                if (e.keyCode == 13) {
+                    var name = document.getElementById("name").value;
+                    var message = document.getElementById("message").value;
+                    var checkmessage = document.getElementById("message").value;
+                    if (checkmessage == "") {
+                        //w.send(message + "111111111111");
+                    } else {
+                        w.send(name + ":" + message);
+                        document.getElementById("message").value = "";
+                    }
+                }
+            }
+            function changeroom(cNumber) {
+                if (cNumber == 0) {
+
+                } else {
+                    if (nowServerRoom == cNumber) {
+                        alert("已在與" + nowServerRoom + "交談中");
+                    } else {
+                        document.getElementById("chatbox").innerHTML += "已切換到訪客 " + cNumber + "\n";
+                    }
+
+                }
+
+                console.log(cNumber);
+                w.send("server:" + cNumber);
+                // console.log(cNumber);
+                logcNumber(cNumber);
+                nowServerRoom = cNumber;
+            }
+            function logcNumber(cNumber) {
+                this.cNumber = cNumber;
+            }
+            connectToServer();
+
+        </script>
+    </head>
+    <body class="backageground">
+        <div>
+            <div id="contentDiv">
+                <center id="contentcenter"  class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                    <div><h1 id="h1_service"><img src="./rab.png" style="height:70px ; width:70px">客服人員</h1></div>
+                    <textarea id="chatbox"  rows="15"  class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-control" readonly=""></textarea>
+                    <br>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <center class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <font id="serviceName">Name:</font><input id="name" type="text" value="客服人員" readonly="" class="form-control"><br>
+                            <font id="serviceMessage">Message:</font><input id="message" type="text" onkeypress="runScript(event)" class="form-control">
+                            <br>
+                            <div><button onclick="sendMessage()" class="btn btn-primary btn-lg btn-block Send">Send</button></div>
+                        </center>
+                    </div>
+                </center>
+            </div>
+            <div id="buttonDiv">
+                <center  id="buttoncenter"  class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                    <div><h1 id="h1_service_custom">上線訪客</h1></div><br>
+                    <br>
+                    <div id="guestbutton" class="animated fadeInDown"></div>
+                </center>
+            </div>
+        </div>
+    </body>
+</html>

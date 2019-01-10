@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script type="text/javascript">
+            var w;
+            var name = window.sessionStorage.getItem('label');
+            String.prototype.startsWith = function (prefix)
+            {
+                return (this.substr(0, prefix.length) === prefix);
+            }
+
+            String.prototype.endsWith = function (suffix)
+            {
+                return (this.substr(this.length - suffix.length) === suffix);
+            }
+            /*
+             function httpGet(theUrl)
+             {
+             var xmlHttp = null;
+             xmlHttp = new XMLHttpRequest();
+             xmlHttp.open("GET", theUrl, false);
+             xmlHttp.send(number.toString());
+             console.log("xxxxxxxxxxxxxxxxfunctionNumberxxxxxxxxxxxxxxx");
+             console.log(number.toString());
+             return xmlHttp.responseText;
+             }
+             */
+            /*
+             var namedata={
+             "type":"enter",
+             "Customname":name
+             }
+             */
+            function connectToServer() {
+                url = "ws://localhost:8887";//pc實體位置
+               
+                w = new WebSocket(url);
+                w.onopen = function () {
+                    //w.send("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                    console.log()
+                }
+                var numberIsTrue = true;
+                w.onmessage = function (e) {
+                    var message = e.data;
+
+                    console.log("e.data1");
+                    console.log(e.data);
+                    //取一開始進來的訪客number
+                    if (numberIsTrue == true) {
+                        numberIsTrue = false;
+                        number = e.data;
+                        logcNumber(number);
+                        //localStorage.setItem('cNumber' + number.toString(), number);
+                        //httpGet("./service.html");//傳送httpRequest
+                    }
+
+                    if (message.startsWith("訪客 " + number)) {//訊息是別的訪客上線離線就忽略,別的訪客來的訊息的也忽略
+                        //"訪客 " //自己的要顯示
+                        if (message.startsWith("訪客 ") && message.endsWith(" 已連線")) {
+                            //訪客看不到  自己已連線的訊息
+                        } else {
+                            if (e.data == "訪客 " + number + ":exit") {
+                                document.getElementById("chatbox").innerHTML += "已離開客服系統";
+                                console.log("exitexitexitexitexitexitexit");
+                                //localStorage.removeItem("cNumber" + number);
+                                //w.onclose();
+                            } else {
+                                document.getElementById("chatbox").innerHTML += e.data + "\n";
+                                document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+                            }
+
+                        }
+                    } else if (message.startsWith("訪客 ")) {
+
+                    }
+                    else {
+                        var tail = message.substring(message.indexOf(":") + 1);
+
+                        if (tail.indexOf("IMAGE:") == 0) {
+                            document.getElementById("imageBox").src = tail.substring(tail.indexOf("IMAGE:") + 6);
+                            return;
+                        }
+                        if (tail.indexOf("ALERT:") == 0) {
+                            alert(tail.substring(tail.indexOf("ALERT:") + 6));
+                            return;
+                        }
+                        document.getElementById("chatbox").innerHTML += e.data + "\n";
+                        document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+                    }
+                }
+                function logcNumber(number) {
+                    this.number = number;
+                }
+
+                w.onclose = function () {
+                    document.getElementById("chatbox").innerHTML += "伺服器關閉中，請稍等伺服器重新開啟...";
+                    logcNumber(number);
+                    console.log("eeeeeeeeeeeeeeeeeeeeeeeee" + e);
+                    w.send("xttttttttttttttttttttttttttttttx");
+
+                    //localStorage.removeItem("cNumber" + number);//remove  key
+                    console.log("closecloseclosecloseclose");
+                    log("closed");
+
+                }
+            }
+            function sendMessage() {
+                // var name = document.getElementById("name").value;
+                var checkmessage = document.getElementById("message").value;
+                var message = "訪客 " + number + ":" + document.getElementById("message").value;
+                if (checkmessage == "") {
+                    //w.send(message + "111111111111");
+                } else {
+                    w.send(message);
+                    document.getElementById("message").value = "";
+                }
+
+            }
+            function runScript(e) {
+                if (e.keyCode == 13) {
+                    // var name = document.getElementById("name").value;
+                    var message = "訪客 " + number + ":" + document.getElementById("message").value;
+                    var checkmessage = document.getElementById("message").value;
+                    if (checkmessage == "") {
+                        //w.send(message + "111111111111");
+                    } else {
+                        w.send(message);
+                        document.getElementById("message").value = "";
+                    }
+                }
+            }
+            connectToServer();
+        </script>
+    </head>
+    <body class="backageground">
+        <div id="cContent" style="text-align:center">
+            <center  class="col-xs-offset-2 col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-8 col-sm-8 col-md-8 col-lg-8 " >
+                <div>
+                    <textarea id="chatbox" rows="15"  readonly="" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-control" >訪客：</textarea>
+                </div>
+                <div>
+                    <input id="message" type="text" onkeypress="runScript(event)" class="form-control">
+                    <!--<textarea id="message"  rows="5"  class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-control" onkeypress="runScript(event)"></textarea>-->
+                </div>
+                <br>
+                <div>
+                    <button id="messageButton" onclick="sendMessage()"  class="btn btn-primary btn-lg btn-block" >Send</button>
+                </div>
+            </center>
+            
+        </div>
+    </body>
+</html>
